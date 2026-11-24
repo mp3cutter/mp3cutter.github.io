@@ -1,0 +1,153 @@
+---
+import {
+  GITHUB_REPO_URL,
+  SITE_NAME,
+  SUPPORTED_LANGUAGES,
+  SUPPORT_URL,
+  getLocalizedPath,
+  type LocaleCode,
+  type PageKey,
+} from '../i18n/config';
+import type { TranslationDict } from '../i18n/types';
+
+interface Props {
+  lang: LocaleCode;
+  page: PageKey;
+  t: TranslationDict;
+}
+
+const { lang, page, t } = Astro.props;
+---
+
+<footer class="mt-20 border-t border-line/70 bg-card/55">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 py-10">
+    <div class="grid gap-8 md:grid-cols-3 md:items-start">
+      <div class="space-y-3">
+        <a
+          href={getLocalizedPath(lang, 'home')}
+          class="inline-flex items-center gap-2.5 text-base font-bold tracking-tight text-ink-primary"
+        >
+          <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#547290] text-white">
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.1"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M2 12h2" />
+              <path d="M6 8v8" />
+              <path d="M10 5v14" />
+              <circle cx="17.5" cy="7.5" r="2.5" />
+              <circle cx="17.5" cy="16.5" r="2.5" />
+              <path d="m14 12 6-3" />
+              <path d="m14 12 6 3" />
+            </svg>
+          </span>
+          <span>{SITE_NAME}</span>
+        </a>
+        <p class="text-sm leading-relaxed text-ink-secondary max-w-xs">
+          {t.footer.tagline}
+        </p>
+        <p class="inline-flex items-center gap-1.5 text-xs font-medium text-ink-secondary">
+          <svg
+            class="h-3.5 w-3.5 text-accent-strong shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+            <path d="m9 12 2 2 4-4" />
+          </svg>
+          <span>{t.footer.privacyNote}</span>
+        </p>
+      </div>
+
+      <div class="flex flex-col gap-2 text-sm">
+        <a
+          href={getLocalizedPath(lang, 'home')}
+          class="w-fit font-medium text-ink-secondary hover:text-ink-primary transition-studio"
+        >
+          {t.nav.home}
+        </a>
+        <a
+          href={getLocalizedPath(lang, 'how-to-use')}
+          class="w-fit font-medium text-ink-secondary hover:text-ink-primary transition-studio"
+        >
+          {t.nav.howToUse}
+        </a>
+        <a
+          href={getLocalizedPath(lang, 'hire-me')}
+          class="w-fit font-medium text-ink-secondary hover:text-ink-primary transition-studio"
+        >
+          {t.nav.hireMe}
+        </a>
+        <a
+          href={SUPPORT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="w-fit font-medium text-ink-secondary hover:text-ink-primary transition-studio"
+        >
+          {t.nav.supportDeveloper}
+        </a>
+        <a
+          href={GITHUB_REPO_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={t.nav.githubAriaLabel}
+          class="inline-flex w-fit items-center gap-1.5 font-medium text-ink-secondary hover:text-ink-primary transition-studio"
+        >
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="18" cy="18" r="3" />
+            <circle cx="6" cy="6" r="3" />
+            <path d="M6 21V9a9 9 0 0 0 9 9" />
+          </svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+
+      <div>
+        <p class="text-[11px] font-semibold uppercase tracking-wider text-ink-secondary mb-2.5">
+          {t.nav.languageSelectorLabel}
+        </p>
+        <div class="flex flex-wrap gap-1.5">
+          {SUPPORTED_LANGUAGES.map((item) => {
+            const isCurrent = item.code === lang;
+            return (
+              <a
+                href={getLocalizedPath(item.code, page)}
+                hreflang={item.hreflang}
+                aria-current={isCurrent ? 'true' : undefined}
+                class:list={[
+                  'rounded-lg px-2.5 py-1 text-xs transition-studio',
+                  isCurrent
+                    ? 'bg-[#547290] text-white font-semibold'
+                    : 'bg-subtle/60 text-ink-secondary hover:bg-subtle hover:text-ink-primary font-medium',
+                ]}
+              >
+                {item.label}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-8 pt-5 border-t border-line/70 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs text-ink-secondary">
+      <p>{t.footer.copyright}</p>
+      <a
+        href={getLocalizedPath(lang, 'hire-me')}
+        class="hover:text-ink-primary transition-studio"
+      >
+        {t.footer.builtBy}
+      </a>
+    </div>
+  </div>
+</footer>

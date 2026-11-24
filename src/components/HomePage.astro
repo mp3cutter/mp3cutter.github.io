@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Mp3CutterIsland from './Mp3CutterIsland';
+import { type LocaleCode } from '../i18n/config';
+import { getTranslations } from '../i18n/translations';
+import { buildFaqSchema, buildWebApplicationSchema } from '../utils/schemas';
+
+interface Props {
+  lang: LocaleCode;
+}
+
+const { lang } = Astro.props;
+const t = getTranslations(lang);
+const schemas = [buildWebApplicationSchema(lang, t), buildFaqSchema(t)];
+---
+
+<BaseLayout
+  lang={lang}
+  page="home"
+  title={t.home.title}
+  description={t.home.description}
+  ogImageAlt={t.home.ogImageAlt}
+  t={t}
+  schemas={schemas}
+>
+  <!-- Full-Viewport Hero Section: occupies the entire initial screen cleanly before scrolling -->
+  <div class="min-h-[calc(100svh-5.25rem)] sm:min-h-[calc(100svh-6.25rem)] flex flex-col justify-between pb-4 sm:pb-6">
+    <div class="my-auto py-3 sm:py-4">
+      <section class="mx-auto max-w-3xl text-center">
+        <h1 class="text-2xl sm:text-3xl lg:text-[2.35rem] font-bold tracking-[-0.025em] text-ink-primary leading-[1.16]">
+          {t.home.h1}
+        </h1>
+        <p class="mx-auto mt-2.5 max-w-2xl text-sm sm:text-[15px] leading-relaxed text-ink-secondary">
+          {t.home.heroSubtitle}
+        </p>
+      </section>
+
+      <div class="mt-5 sm:mt-6 mx-auto max-w-5xl">
+        <Mp3CutterIsland client:load t={t.cutter} />
+      </div>
+    </div>
+
+    <!-- Subtle Scroll Cue to Below-the-Fold Sections -->
+    <div class="pt-4 flex justify-center">
+      <a
+        href="#faq-heading"
+        class="group inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium text-ink-secondary hover:text-ink-primary hover:bg-subtle/60 transition-studio"
+      >
+        <span>{t.home.faqHeading}</span>
+        <svg
+          class="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-y-0.5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="m6 9 6 6 6-6" />
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Below-the-Fold Natural Human 4-Question FAQ (revealed on scroll, matches FAQPage JSON-LD) -->
+  <section aria-labelledby="faq-heading" class="pt-14 sm:pt-20 pb-4 mx-auto max-w-4xl border-t border-line/65">
+    <div class="text-center mb-9">
+      <h2 id="faq-heading" class="text-xl sm:text-2xl font-bold tracking-[-0.02em] text-ink-primary">
+        {t.home.faqHeading}
+      </h2>
+      <p class="mt-1.5 text-sm text-ink-secondary">
+        {t.home.faqSubheading}
+      </p>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      {t.home.faqs.map((faq, idx) => (
+        <article class="rounded-2xl border border-line/85 bg-card p-6 shadow-soft flex flex-col justify-start">
+          <div class="flex items-start gap-3">
+            <span class="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-subtle/80 font-mono text-[11px] font-semibold text-accent-strong">
+              0{idx + 1}
+            </span>
+            <div>
+              <h3 class="text-[15px] sm:text-base font-bold leading-snug text-ink-primary">
+                {faq.question}
+              </h3>
+              <p class="mt-2.5 text-sm leading-relaxed text-ink-secondary">
+                {faq.answer}
+              </p>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

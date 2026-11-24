@@ -1,0 +1,134 @@
+---
+import '@fontsource-variable/plus-jakarta-sans';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import {
+  SITE_NAME,
+  SITE_URL,
+  getCanonicalUrl,
+  getHreflangLinks,
+  getLanguageOption,
+  type LocaleCode,
+  type PageKey,
+} from '../i18n/config';
+import type { TranslationDict } from '../i18n/types';
+
+interface Props {
+  lang: LocaleCode;
+  page: PageKey;
+  title: string;
+  description: string;
+  ogImageAlt: string;
+  t: TranslationDict;
+  schemas: Record<string, unknown>[];
+}
+
+const { lang, page, title, description, ogImageAlt, t, schemas } = Astro.props;
+const langOption = getLanguageOption(lang);
+const canonicalUrl = getCanonicalUrl(lang, page);
+const hreflangs = getHreflangLinks(page);
+const ogImageUrl = `${SITE_URL}/og-image.png`;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Anti-FOUC Theme Initialization -->
+    <script is:inline>
+      (function () {
+        try {
+          var saved = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (saved === 'dark' || (!saved && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (_) {}
+      })();
+    </script>
+
+    <!-- Google Tag Manager & Google Analytics 4 -->
+    <script is:inline async src="https://www.googletagmanager.com/gtm.js?id=GTM-WB4P8LV7"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-DJ7CXZNERH');
+    </script>
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="theme-color" content="#7895B2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#12171D" media="(prefers-color-scheme: dark)" />
+
+    <link rel="canonical" href={canonicalUrl} />
+    {hreflangs.map((item) => (
+      <link rel="alternate" hreflang={item.hreflang} href={item.href} />
+    ))}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content={langOption.ogLocale} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={ogImageAlt} />
+
+    <!-- PWA & Icons -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+
+    <!-- Structured Data (JSON-LD) -->
+    {schemas.map((schema) => (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+    ))}
+  </head>
+  <body class="font-sans antialiased bg-page text-ink-primary selection:bg-accent-secondary/50">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WB4P8LV7" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-xl focus:bg-card focus:px-4 focus:py-2.5 focus:text-sm focus:font-bold focus:text-ink-primary focus:shadow-elevated"
+    >
+      {t.nav.skipToContent}
+    </a>
+
+    <Navbar lang={lang} page={page} t={t} />
+
+    <main id="main-content" class="mx-auto max-w-5xl px-4 sm:px-6 pt-5 sm:pt-7">
+      <slot />
+    </main>
+
+    <Footer lang={lang} page={page} t={t} />
+
+    <!-- Service Worker Registration for Offline PWA Support -->
+    <script is:inline>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () {});
+        });
+      }
+    </script>
+  </body>
+</html>
